@@ -14,7 +14,8 @@ struct SimplifiedAttestationDoc {
 }
 
 // Function to decode base64 and CBOR-encoded attestation document and extract specific fields
-fn decode_attestation_document(base64_input: &str) -> Result<SimplifiedAttestationDoc, Box<dyn Error>> {
+// fn decode_attestation_document(base64_input: &str) -> Result<SimplifiedAttestationDoc, Box<dyn Error>> {
+fn decode_attestation_document(base64_input: &str) ->  Result<(), Box<dyn Error>> {
     // Decode base64 to get the raw CBOR bytes
     let decoded_bytes = BASE64_STANDARD.decode(base64_input)?;
 
