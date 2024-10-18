@@ -61,8 +61,8 @@ fn main() -> Result<(), Box<dyn Error>> {
     // verify_attestation_signature(&attestation_doc)?;
 
     // Convert the decoded attestation document to JSON and pretty-print it
-    let json_output = serde_json::to_string_pretty(&attestation_doc)?;
-    println!("Decoded and Verified Attestation Document:\n{}", json_output);
+    // let json_output = serde_json::to_string_pretty(&attestation_doc)?;
+    // println!("Decoded and Verified Attestation Document:\n{}", json_output);
 
     Ok(())
 }
