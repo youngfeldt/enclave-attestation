@@ -29,8 +29,9 @@ fn decode_attestation_document(base64_input: &str) -> Result<remote_attestation_
     // Deserialize the CBOR data into AttestationDoc structure
     let attestation_doc = parse_document(&decoded_bytes)?;
 
-    let json_output = serde_json::to_string_pretty(&attestation_doc)?;
-    println!("Decoded and Verified Attestation Document:\n{}", json_output);
+    println!("{:?}", attestation_doc); 
+    // let json_output = serde_json::to_string_pretty(&attestation_doc)?;
+    // println!("Decoded and Verified Attestation Document:\n{}", json_output);
 
     Ok(attestation_doc)
 }
@@ -54,6 +55,7 @@ fn main() -> Result<(), Box<dyn Error>> {
 
     // Decode and deserialize the attestation document
     let attestation_doc = decode_attestation_document(&base64_string)?;
+    println!("{:?}", attestation_doc); 
 
     // Validate the attestation document's signature
     // verify_attestation_signature(&attestation_doc)?;
