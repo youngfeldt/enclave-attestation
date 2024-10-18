@@ -1,39 +1,42 @@
 use base64::{engine::general_purpose::STANDARD as BASE64_STANDARD, Engine};
-use remote_attestation_verifier::{parse_document, AttestationDocument};
-use serde::{Serialize};
+use serde::{Deserialize, Serialize};
+use serde_cbor::from_slice;
+use std::collections::HashMap;
 use std::error::Error;
 use std::fs;
 use std::path::Path;
-use std::collections::HashMap;
 
-// Structure to hold just the timestamp and PCR values
-// #[derive(Serialize)]
-// struct SimplifiedAttestationDoc {
-//     timestamp: u64,
-//     pcrs: HashMap<String, String>,
-// }
+// Define the structure for the outer attestation document
+#[derive(Debug, Serialize, Deserialize)]
+struct AttestationDoc {
+    payload: Vec<u8>,       // The payload is CBOR-encoded
+    signature: Vec<u8>,     // Signature as a byte array
+    public_key: Vec<u8>,    // Public key as a byte array
+}
 
-// Function to decode base64 and CBOR-encoded attestation document and extract specific fields
-// fn decode_attestation_document(base64_input: &str) -> Result<SimplifiedAttestationDoc, Box<dyn Error>> {
-fn decode_attestation_document(base64_input: &str) ->  Result<(), Box<dyn Error>> {
-    // Decode base64 to get the raw CBOR bytes
-    println!("decoding b64");
-    let decoded_bytes = BASE64_STANDARD.decode(base64_input.trim())?;
-    println!("done decoding b64");
+// Define the structure for the decoded payload (inner document)
+#[derive(Debug, Serialize, Deserialize)]
+struct AttestationPayload {
+    module_id: String,
+    digest: String,
+    pcrs: HashMap<String, String>,
+    user_data: Option<String>,
+    nonce: Option<String>,
+    timestamp: Option<u64>,
+}
 
-    // Parse the attestation document
-    let attestation_doc: AttestationDocument = parse_document(&decoded_bytes)?;
+// Function to decode the attestation document and extract the payload
+fn decode_attestation_document(base64_input: &str) -> Result<AttestationPayload, Box<dyn Error>> {
+    // Step 1: Decode base64 to get the raw CBOR bytes
+    let decoded_bytes = BASE64_STANDARD.decode(base64_input)?;
 
-    println!("debugging attestation_doc");
-    dbg!(&attestation_doc); 
-    // Extract the fields we're interested in: timestamp and PCR values
-    // let simplified_doc = SimplifiedAttestationDoc {
-    //     timestamp: attestation_doc.timestamp, // Assuming `timestamp` field exists
-    //     pcrs: attestation_doc.pcrs,           // Assuming `pcrs` field exists and is a map
-    // };
+    // Step 2: Deserialize the outer attestation document
+    let attestation_doc: AttestationDoc = from_slice(&decoded_bytes)?;
 
-    Ok(())
-    // Ok(simplified_doc)
+    // Step 3: Deserialize the payload (which is CBOR-encoded)
+    let payload: AttestationPayload = from_slice(&attestation_doc.payload)?;
+
+    Ok(payload)
 }
 
 fn main() -> Result<(), Box<dyn Error>> {
@@ -43,13 +46,11 @@ fn main() -> Result<(), Box<dyn Error>> {
     // Read the base64-encoded attestation document
     let base64_string = fs::read_to_string(path)?;
 
-    // Decode and extract the timestamp and PCR values
-    let _simplified_attestation_doc = decode_attestation_document(&base64_string)?;
+    // Decode and deserialize the attestation document
+    let payload = decode_attestation_document(&base64_string)?;
 
-    // // Serialize the simplified structure to JSON and pretty-print it
-    // let json_output = serde_json::to_string_pretty(&simplified_attestation_doc)?;
-    // println!("Simplified Attestation Document:\n{}", json_output);
+    // Print the decoded fields from the payload
+    println!("{:#?}", payload);
 
     Ok(())
 }
-
