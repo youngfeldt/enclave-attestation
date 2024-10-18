@@ -18,7 +18,7 @@ use std::collections::HashMap;
 fn decode_attestation_document(base64_input: &str) ->  Result<(), Box<dyn Error>> {
     // Decode base64 to get the raw CBOR bytes
     println!("decoding b64");
-    let decoded_bytes = BASE64_STANDARD.decode(base64_input)?;
+    let decoded_bytes = BASE64_STANDARD.decode(base64_input.trim())?;
     println!("done decoding b64");
 
     // Parse the attestation document
