@@ -1,10 +1,10 @@
-use base64::{engine::general_purpose::STANDARD as BASE64_STANDARD, Engine};
-use serde::{Deserialize, Serialize};
-use serde_cbor::from_slice;
-use std::collections::HashMap;
-use std::error::Error;
-use std::fs;
-use std::path::Path;
+use base64::prelude::*;  // Import for Base64 decoding
+use serde::{Deserialize, Serialize};  // For serde serialization/deserialization
+use serde_cbor::from_slice;  // For CBOR decoding
+use std::collections::HashMap;  // For HashMap used in the struct
+use std::error::Error;  // For error handling
+use std::fs;  // For reading files
+use std::path::Path;  // For handling file paths
 
 // Define the structure for the outer attestation document
 #[derive(Debug, Serialize, Deserialize)]
@@ -26,25 +26,22 @@ struct AttestationPayload {
 }
 
 // Function to decode the attestation document and extract the payload
-fn decode_attestation_document(base64_input: &str) -> Result<AttestationPayload, Box<dyn Error>> {
+fn decode_attestation_document(base64_input: &str) -> Result<(), Box<dyn Error>> {
     // Step 1: Decode base64 to get the raw CBOR bytes of the outer document
     let decoded_bytes = BASE64_STANDARD.decode(base64_input.trim())?;
     println!("1. Base64 Decoded");
 
-    // Step 2: Deserialize the outer attestation document (AttestationDoc)
-    let attestation_doc: AttestationDoc = from_slice(&decoded_bytes)?;
-    println!("2. CBOR Decoded");
+    // Step 2: Try to debug print the CBOR data before deserialization
+    match serde_cbor::from_slice::<serde_cbor::Value>(&decoded_bytes) {
+        Ok(value) => {
+            println!("2. CBOR Decoded Value: {:#?}", value);
+        }
+        Err(e) => {
+            println!("Failed to decode CBOR: {:?}", e);
+        }
+    }
 
-    // Step 3: Decode the payload from Base64 (assumed to be encoded as Base64)
-    let decoded_payload = BASE64_STANDARD.decode(&attestation_doc.payload)?;
-    println!("3. Paylod B64 Decoded");
-
-    // Step 4: Deserialize the CBOR-encoded payload into the AttestationPayload struct
-    let payload: AttestationPayload = from_slice(&decoded_payload)?;
-    println!("4. Paylod CBOR Decoded");
-    println!("payload = {:#?}", payload);
-
-    Ok(payload)
+    Ok(())
 }
 
 fn main() -> Result<(), Box<dyn Error>> {
@@ -55,10 +52,7 @@ fn main() -> Result<(), Box<dyn Error>> {
     let base64_string = fs::read_to_string(path)?;
 
     // Step 2: Decode and deserialize the attestation document
-    let payload = decode_attestation_document(&base64_string)?;
-
-    // Step 3: Print the decoded payload fields
-    println!("{:#?}", payload);
+    decode_attestation_document(&base64_string)?;
 
     Ok(())
 }
