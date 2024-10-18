@@ -8,19 +8,19 @@ use std::fs;
 use std::path::Path;
 
 // Structure to deserialize attestation document from CBOR
-#[derive(Debug, Serialize, Deserialize)]
-struct AttestationDoc {
-    module_id: String,
-    timestamp: u64,
-    pcrs: std::collections::HashMap<String, String>,
-    public_key: String,
-    user_data: Option<String>,
-    nonce: Option<String>,
-    signature: String,
-}
+// #[derive(Debug, Serialize, Deserialize)]
+// struct AttestationDoc {
+//     module_id: String,
+//     timestamp: u64,
+//     pcrs: std::collections::HashMap<String, String>,
+//     public_key: String,
+//     user_data: Option<String>,
+//     nonce: Option<String>,
+//     signature: String,
+// }
 
 // Decode base64 and CBOR-encoded attestation document
-fn decode_attestation_document(base64_input: &str) -> Result<AttestationDocument, Box<dyn Error>> {
+fn decode_attestation_document(base64_input: &str) -> remote_attestation_verifier::AttestationDocument, Box<dyn Error>> {
     // Decode base64 to get the raw CBOR bytes
     println!("Decoding");
     let decoded_bytes = BASE64_STANDARD.decode(base64_input)?;
