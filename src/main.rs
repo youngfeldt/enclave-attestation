@@ -1,54 +1,31 @@
 use base64::{engine::general_purpose::STANDARD as BASE64_STANDARD, Engine};
-use remote_attestation_verifier::{parse_document, AttestationDocument};
-use serde::{Serialize};
+use serde_cbor::from_slice;
 use std::error::Error;
 use std::fs;
 use std::path::Path;
-use std::collections::HashMap;
 
-// Structure to hold just the timestamp and PCR values
-// #[derive(Serialize)]
-// struct SimplifiedAttestationDoc {
-//     timestamp: u64,
-//     pcrs: HashMap<String, String>,
-// }
+fn decode_attestation_document(base64_input: &str) -> Result<AttestationDoc, Box<dyn Error>> {
+    // First, decode the Base64-encoded string to get the raw CBOR bytes
+    let decoded_bytes = BASE64_STANDARD.decode(base64_input)?;
 
-// Function to decode base64 and CBOR-encoded attestation document and extract specific fields
-// fn decode_attestation_document(base64_input: &str) -> Result<SimplifiedAttestationDoc, Box<dyn Error>> {
-fn decode_attestation_document(base64_input: &str) ->  Result<(), Box<dyn Error>> {
-    // Decode base64 to get the raw CBOR bytes
-    println!("decoding b64");
-    let decoded_bytes = BASE64_STANDARD.decode(base64_input.trim())?;
-    println!("done decoding b64");
+    // Use serde_cbor to deserialize the CBOR data into the AttestationDoc structure
+    let attestation_doc: AttestationDoc = from_slice(&decoded_bytes)?;
 
-    // Parse the attestation document
-    let attestation_doc: AttestationDocument = parse_document(&decoded_bytes)?;
-
-    println!("debugging attestation_doc");
-    dbg!(&attestation_doc); 
-    // Extract the fields we're interested in: timestamp and PCR values
-    // let simplified_doc = SimplifiedAttestationDoc {
-    //     timestamp: attestation_doc.timestamp, // Assuming `timestamp` field exists
-    //     pcrs: attestation_doc.pcrs,           // Assuming `pcrs` field exists and is a map
-    // };
-
-    Ok(())
-    // Ok(simplified_doc)
+    Ok(attestation_doc)
 }
 
 fn main() -> Result<(), Box<dyn Error>> {
     // Path to the base64-encoded attestation document
     let path = Path::new("attestation.b64");
 
-    // Read the base64-encoded attestation document
+    // Read the base64-encoded attestation document from a file
     let base64_string = fs::read_to_string(path)?;
 
-    // Decode and extract the timestamp and PCR values
-    let _simplified_attestation_doc = decode_attestation_document(&base64_string)?;
+    // Decode the attestation document
+    let attestation_doc = decode_attestation_document(&base64_string)?;
 
-    // // Serialize the simplified structure to JSON and pretty-print it
-    // let json_output = serde_json::to_string_pretty(&simplified_attestation_doc)?;
-    // println!("Simplified Attestation Document:\n{}", json_output);
+    // Print out the decoded attestation document
+    println!("{:#?}", attestation_doc);
 
     Ok(())
 }

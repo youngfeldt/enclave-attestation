@@ -829,6 +829,7 @@ dependencies = [
  "base64",
  "remote-attestation-verifier",
  "serde",
+ "serde_cbor",
  "serde_json",
 ]
 
