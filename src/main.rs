@@ -32,6 +32,10 @@ fn extract_pcr_values(attestation_doc: &AttestationDocument) -> Result<(), Box<d
     if let Value::Map(map) = &payload {
         if let Some(pcr_value) = map.get(&Value::Text("pcrs".to_string())) {
             if let Value::Map(pcrs) = pcr_value {
+                println!("PCR values:");
+                // Iterate over the PCR values and print them
+                // Note: This assumes that the PCR values are stored as bytes in the "pcrs" map
+                // may need to adjust this logic based on the actual structure of the payload
                 for (index, value) in pcrs {
                     if let (Value::Text(index), Value::Bytes(pcr_data)) = (index, value) {
                         println!("PCR[{}]: {:?}", index, pcr_data);
