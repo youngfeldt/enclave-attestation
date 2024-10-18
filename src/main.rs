@@ -1,6 +1,6 @@
 use base64::{engine::general_purpose::STANDARD as BASE64_STANDARD, Engine};
 use remote_attestation_verifier::{AttestationDocument, parse_document, verify};
-use serde_cbor::from_slice;
+use serde_cbor::{from_slice, Value};  // Import Value to help with debugging
 use std::collections::HashMap;
 use std::error::Error;
 use std::fs;
@@ -29,21 +29,30 @@ fn decode_attestation_document(base64_input: &str) -> Result<AttestationDocument
     Ok(attestation_doc)
 }
 
-// Function to extract PCR values from the payload
+// Function to decode the inner payload bytestring
+fn decode_payload(payload_bytes: &[u8]) -> Result<AttestationPayload, Box<dyn Error>> {
+    println!("START: Decoding the payload bytes (CBOR format)");
+
+    // Deserialize the CBOR payload into the AttestationPayload struct
+    let payload: AttestationPayload = from_slice(payload_bytes)?;
+    println!("DONE: Payload successfully deserialized");
+
+    Ok(payload)
+}
+
+// Function to extract PCR values from the attestation document
 fn extract_pcr_values(attestation_doc: &AttestationDocument) -> Result<(), Box<dyn Error>> {
-    println!("START: Step 1: Extracting the CBOR-encoded payload from the attestation document");
+    println!("START: Extracting the CBOR-encoded payload from the attestation document");
 
-    // Step 1: Decode the CBOR-encoded payload
+    // Step 1: The payload is a bytestring, we need to decode it as CBOR
     let payload_cbor = &attestation_doc.payload;
-    println!("DONE: Step 1: CBOR payload extracted, now deserializing payload");
+    println!("DONE: Extracted the CBOR payload as a byte string");
 
-    // Step 2: Deserialize the CBOR payload into a structured format
-    println!("START: Step 2: Deserializing the CBOR payload into AttestationPayload struct");
-    let payload: AttestationPayload = from_slice(payload_cbor)?;
-    println!("DONE: Step 2: Payload deserialized successfully");
-
+    // Step 2: Decode the CBOR-encoded payload into AttestationPayload struct
+    let payload = decode_payload(payload_cbor)?;
+    
     // Step 3: Extract and print PCR values
-    println!("START: Step 3: Checking and printing PCR values from the payload");
+    println!("START: Checking and printing PCR values from the payload");
     if let Some(pcrs) = payload.pcrs {
         for (index, value) in pcrs.iter() {
             println!("PCR[{}]: {:?}", index, value);
@@ -51,7 +60,7 @@ fn extract_pcr_values(attestation_doc: &AttestationDocument) -> Result<(), Box<d
     } else {
         println!("No PCR values found in the attestation document.");
     }
-    println!("DONE: Step 3: PCR values processed");
+    println!("DONE: PCR values processed");
 
     Ok(())
 }
