@@ -29,15 +29,20 @@ struct AttestationPayload {
 fn decode_attestation_document(base64_input: &str) -> Result<AttestationPayload, Box<dyn Error>> {
     // Step 1: Decode base64 to get the raw CBOR bytes of the outer document
     let decoded_bytes = BASE64_STANDARD.decode(base64_input.trim())?;
+    println!("1. Base64 Decoded");
 
     // Step 2: Deserialize the outer attestation document (AttestationDoc)
     let attestation_doc: AttestationDoc = from_slice(&decoded_bytes)?;
+    println!("2. CBOR Decoded");
 
     // Step 3: Decode the payload from Base64 (assumed to be encoded as Base64)
     let decoded_payload = BASE64_STANDARD.decode(&attestation_doc.payload)?;
+    println!("3. Paylod B64 Decoded");
 
     // Step 4: Deserialize the CBOR-encoded payload into the AttestationPayload struct
     let payload: AttestationPayload = from_slice(&decoded_payload)?;
+    println!("4. Paylod CBOR Decoded");
+    println!("payload = {:#?}", payload);
 
     Ok(payload)
 }
