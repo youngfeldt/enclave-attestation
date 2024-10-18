@@ -20,7 +20,7 @@ struct AttestationDoc {
 }
 
 // Decode base64 and CBOR-encoded attestation document
-fn decode_attestation_document(base64_input: &str) -> Result<AttestationDoc, Box<dyn Error>> {
+fn decode_attestation_document(base64_input: &str) -> Result<AttestationDocument, Box<dyn Error>> {
     // Decode base64 to get the raw CBOR bytes
     println!("Decoding");
     let decoded_bytes = BASE64_STANDARD.decode(base64_input)?;
