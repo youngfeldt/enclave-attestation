@@ -28,7 +28,8 @@ fn decode_attestation_document(base64_input: &str) -> Result<SimplifiedAttestati
     //     pcrs: attestation_doc.pcrs,           // Assuming `pcrs` field exists and is a map
     // };
 
-    Ok(simplified_doc)
+    Ok(())
+    // Ok(simplified_doc)
 }
 
 fn main() -> Result<(), Box<dyn Error>> {
