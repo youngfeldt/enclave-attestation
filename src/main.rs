@@ -8,23 +8,23 @@ use std::collections::HashMap;
 
 // Structure to hold just the timestamp and PCR values
 #[derive(Serialize)]
-struct SimplifiedAttestationDoc {
-    timestamp: u64,
-    pcrs: HashMap<String, String>,
-}
+// struct SimplifiedAttestationDoc {
+//     timestamp: u64,
+//     pcrs: HashMap<String, String>,
+// }
 
 // Function to decode base64 and CBOR-encoded attestation document and extract specific fields
 // fn decode_attestation_document(base64_input: &str) -> Result<SimplifiedAttestationDoc, Box<dyn Error>> {
 fn decode_attestation_document(base64_input: &str) ->  Result<(), Box<dyn Error>> {
     // Decode base64 to get the raw CBOR bytes
-    println!("decoding b64")
+    println!("decoding b64");
     let decoded_bytes = BASE64_STANDARD.decode(base64_input)?;
-    println!("done decoding b64")
+    println!("done decoding b64");
 
     // Parse the attestation document
     let attestation_doc: AttestationDocument = parse_document(&decoded_bytes)?;
 
-    println!("debugging attestation_doc")
+    println!("debugging attestation_doc");
     dbg!(&attestation_doc); 
     // Extract the fields we're interested in: timestamp and PCR values
     // let simplified_doc = SimplifiedAttestationDoc {
