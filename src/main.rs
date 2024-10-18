@@ -28,7 +28,7 @@ struct AttestationPayload {
 // Function to decode the attestation document and extract the payload
 fn decode_attestation_document(base64_input: &str) -> Result<AttestationPayload, Box<dyn Error>> {
     // Step 1: Decode base64 to get the raw CBOR bytes
-    let decoded_bytes = BASE64_STANDARD.decode(base64_input)?;
+    let decoded_bytes = BASE64_STANDARD.decode(base64_input.trim())?;
 
     // Step 2: Deserialize the outer attestation document
     let attestation_doc: AttestationDoc = from_slice(&decoded_bytes)?;
