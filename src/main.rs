@@ -1,8 +1,25 @@
 use base64::{engine::general_purpose::STANDARD as BASE64_STANDARD, Engine};
+use serde::{Deserialize, Serialize};
+use std::collections::HashMap;
 use serde_cbor::from_slice;
 use std::error::Error;
 use std::fs;
 use std::path::Path;
+
+
+// Define the structure for the decoded attestation document
+#[derive(Debug, Serialize, Deserialize)]
+struct AttestationDoc {
+    module_id: String,
+    digest: String,
+    pcrs: HashMap<String, String>,
+    public_key: String,
+    user_data: Option<String>,
+    nonce: Option<String>,
+    signature: String,
+    timestamp: Option<u64>,
+    certificate: Option<String>,
+}
 
 fn decode_attestation_document(base64_input: &str) -> Result<AttestationDoc, Box<dyn Error>> {
     // First, decode the Base64-encoded string to get the raw CBOR bytes
