@@ -7,7 +7,7 @@ use std::path::Path;
 use std::collections::HashMap;
 
 // Structure to hold just the timestamp and PCR values
-#[derive(Serialize)]
+// #[derive(Serialize)]
 // struct SimplifiedAttestationDoc {
 //     timestamp: u64,
 //     pcrs: HashMap<String, String>,
