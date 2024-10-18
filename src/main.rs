@@ -36,14 +36,14 @@ fn decode_attestation_document(base64_input: &str) -> Result<remote_attestation_
 }
 
 // Validate the attestation document signature
-fn verify_attestation_signature(_attestation: &AttestationDoc) -> Result<(), Box<dyn Error>> {
-    // Use the verify function to validate the attestation document
-    // Placeholder for actual verification logic.
-    // Assuming the function `verify` performs signature validation.
+// fn verify_attestation_signature(attestation: &AttestationDoc) -> Result<(), Box<dyn Error>> {
+//     // Use the verify function to validate the attestation document
+//     // Placeholder for actual verification logic.
+//     // Assuming the function `verify` performs signature validation.
     
-    // For now, let's assume the document is valid:
-    Ok(())
-}
+//     // For now, let's assume the document is valid:
+//     Ok(())
+// }
 
 fn main() -> Result<(), Box<dyn Error>> {
     // Path to the base64-encoded attestation document
@@ -56,7 +56,7 @@ fn main() -> Result<(), Box<dyn Error>> {
     let attestation_doc = decode_attestation_document(&base64_string)?;
 
     // Validate the attestation document's signature
-    verify_attestation_signature(&attestation_doc)?;
+    // verify_attestation_signature(&attestation_doc)?;
 
     // Convert the decoded attestation document to JSON and pretty-print it
     let json_output = serde_json::to_string_pretty(&attestation_doc)?;
