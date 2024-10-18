@@ -9,7 +9,7 @@ use std::path::Path;
 // Define the structure for the outer attestation document
 #[derive(Debug, Serialize, Deserialize)]
 struct AttestationDoc {
-    payload: Vec<u8>,       // The payload is CBOR-encoded
+    payload: Vec<u8>,       // The payload is Base64-encoded, needs to be decoded
     signature: Vec<u8>,     // Signature as a byte array
     public_key: Vec<u8>,    // Public key as a byte array
 }
@@ -27,22 +27,17 @@ struct AttestationPayload {
 
 // Function to decode the attestation document and extract the payload
 fn decode_attestation_document(base64_input: &str) -> Result<AttestationPayload, Box<dyn Error>> {
-    // Step 1: Decode base64 to get the raw CBOR bytes
-    let decoded_bytes = BASE64_STANDARD.decode(base64_input.trim())?;
-    println!("decoded bas64 main doc");
+    // Step 1: Decode base64 to get the raw CBOR bytes of the outer document
+    let decoded_bytes = BASE64_STANDARD.decode(base64_input)?;
 
-    // Step 2: Deserialize the outer attestation document
+    // Step 2: Deserialize the outer attestation document (AttestationDoc)
     let attestation_doc: AttestationDoc = from_slice(&decoded_bytes)?;
-    print!("decoded main cbor");
 
-    // Step 3a: Base64 decode the payload
+    // Step 3: Decode the payload from Base64 (assumed to be encoded as Base64)
     let decoded_payload = BASE64_STANDARD.decode(&attestation_doc.payload)?;
-    // Step 3b: Deserialize the payload (which is CBOR-encoded)
+
+    // Step 4: Deserialize the CBOR-encoded payload into the AttestationPayload struct
     let payload: AttestationPayload = from_slice(&decoded_payload)?;
-
-    println!("decoded payload");
-
-    // Return the decoded payload"
 
     Ok(payload)
 }
@@ -51,13 +46,13 @@ fn main() -> Result<(), Box<dyn Error>> {
     // Path to the base64-encoded attestation document
     let path = Path::new("attestation.b64");
 
-    // Read the base64-encoded attestation document
+    // Step 1: Read the base64-encoded attestation document from the file
     let base64_string = fs::read_to_string(path)?;
 
-    // Decode and deserialize the attestation document
+    // Step 2: Decode and deserialize the attestation document
     let payload = decode_attestation_document(&base64_string)?;
 
-    // Print the decoded fields from the payload
+    // Step 3: Print the decoded payload fields
     println!("{:#?}", payload);
 
     Ok(())
