@@ -31,6 +31,7 @@ fn extract_pcr_values(attestation_doc: &AttestationDocument) -> Result<(), Box<d
     // Step 5: Check the payload for the "pcrs" field and extract PCR values
     if let Value::Map(map) = &payload {
         if let Some(pcr_value) = map.get(&Value::Text("pcrs".to_string())) {
+            println!("pcr_value = {:?}",pcr_value);
             if let Value::Map(pcrs) = pcr_value {
                 println!("PCR values:");
                 // Iterate over the PCR values and print them
