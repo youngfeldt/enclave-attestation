@@ -44,7 +44,7 @@ fn main() -> Result<(), Box<dyn Error>> {
     let base64_string = fs::read_to_string(path)?;
 
     // Decode and extract the timestamp and PCR values
-    // let simplified_attestation_doc = decode_attestation_document(&base64_string)?;
+    let _simplified_attestation_doc = decode_attestation_document(&base64_string)?;
 
     // // Serialize the simplified structure to JSON and pretty-print it
     // let json_output = serde_json::to_string_pretty(&simplified_attestation_doc)?;
