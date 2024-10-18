@@ -35,7 +35,11 @@ fn decode_attestation_document(base64_input: &str) -> Result<AttestationPayload,
     let attestation_doc: AttestationDoc = from_slice(&decoded_bytes)?;
     print!("decoded main cbor");
 
-    // Step 3: Deserialize the payload (which is CBOR-encoded)
+    // Step 3a: Base64 decode the payload
+    let decoded_payload = BASE64_STANDARD.decode(&attestation_doc.payload)?;
+    // Step 3b: Deserialize the payload (which is CBOR-encoded)
+    let payload: AttestationPayload = from_slice(&decoded_payload)?;
+
     let payload: AttestationPayload = from_slice(&attestation_doc.payload)?;
     println!("decoded payload");
 
