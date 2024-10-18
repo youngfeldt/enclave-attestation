@@ -21,11 +21,12 @@ fn decode_attestation_document(base64_input: &str) -> Result<SimplifiedAttestati
     // Parse the attestation document
     let attestation_doc: AttestationDocument = parse_document(&decoded_bytes)?;
 
+    dbg!(&attestation_doc); 
     // Extract the fields we're interested in: timestamp and PCR values
-    let simplified_doc = SimplifiedAttestationDoc {
-        timestamp: attestation_doc.timestamp, // Assuming `timestamp` field exists
-        pcrs: attestation_doc.pcrs,           // Assuming `pcrs` field exists and is a map
-    };
+    // let simplified_doc = SimplifiedAttestationDoc {
+    //     timestamp: attestation_doc.timestamp, // Assuming `timestamp` field exists
+    //     pcrs: attestation_doc.pcrs,           // Assuming `pcrs` field exists and is a map
+    // };
 
     Ok(simplified_doc)
 }
@@ -38,11 +39,11 @@ fn main() -> Result<(), Box<dyn Error>> {
     let base64_string = fs::read_to_string(path)?;
 
     // Decode and extract the timestamp and PCR values
-    let simplified_attestation_doc = decode_attestation_document(&base64_string)?;
+    // let simplified_attestation_doc = decode_attestation_document(&base64_string)?;
 
-    // Serialize the simplified structure to JSON and pretty-print it
-    let json_output = serde_json::to_string_pretty(&simplified_attestation_doc)?;
-    println!("Simplified Attestation Document:\n{}", json_output);
+    // // Serialize the simplified structure to JSON and pretty-print it
+    // let json_output = serde_json::to_string_pretty(&simplified_attestation_doc)?;
+    // println!("Simplified Attestation Document:\n{}", json_output);
 
     Ok(())
 }
