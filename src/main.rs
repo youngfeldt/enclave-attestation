@@ -1,7 +1,8 @@
 use base64::{engine::general_purpose::STANDARD as BASE64_STANDARD, Engine};
-use remote_attestation_verifier::verify;
+// use remote_attestation_verifier::{verify, parse_document};
+use remote_attestation_verifier::parse_document;
 use serde::{Deserialize, Serialize};
-use serde_cbor::from_slice;
+// use serde_cbor::from_slice;
 use std::error::Error;
 use std::fs;
 use std::path::Path;
@@ -21,9 +22,9 @@ struct AttestationDoc {
 // Decode base64 and CBOR-encoded attestation document
 fn decode_attestation_document(base64_input: &str) -> Result<AttestationDoc, Box<dyn Error>> {
     // Decode base64 to get the raw CBOR bytes
-    println!("Decoding")
+    println!("Decoding");
     let decoded_bytes = BASE64_STANDARD.decode(base64_input)?;
-    println!("DONE decoding b64 ")
+    println!("DONE decoding b64 ");
 
     // Deserialize the CBOR data into AttestationDoc structure
     let attestation_doc = parse_document(&decoded_bytes)?;
